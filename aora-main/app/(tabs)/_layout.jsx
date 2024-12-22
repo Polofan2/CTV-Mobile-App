@@ -73,7 +73,7 @@ const TabLayout = () => {
         />
 
         <Tabs.Screen
-          name="create"
+          name="liveTV"
           options={{
             title: "Live TV",
             headerShown: false,
