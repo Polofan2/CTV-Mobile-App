@@ -1,6 +1,6 @@
-import { useRouter } from "expo-router"; // Corrected import for useRouter
+import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, Image, FlatList, TouchableOpacity } from "react-native";
+import { View, Image, FlatList, TouchableOpacity, Text } from "react-native";
 
 import { icons } from "../../constants";
 import useAppwrite from "../../lib/useAppwrite";
@@ -10,7 +10,7 @@ import { EmptyState, InfoBox, VideoCard } from "../../components";
 
 const Profile = () => {
   const { user, setUser, setIsLogged } = useGlobalContext();
-  const router = useRouter(); // Initialize the router
+  const router = useRouter();
 
   const { data: posts, refetch } = useAppwrite(() => getUserPosts(user?.$id));
 
@@ -19,11 +19,18 @@ const Profile = () => {
     setUser(null);
     setIsLogged(false);
 
-    router.replace("/sign-in"); // Navigate to sign-in page
+    router.replace("/sign-in");
+  };
+
+  const handleEditProfile = () => {
+    router.push("/edit-profile");
+  };
+
+  const goToSettings = () => {
+    router.push("/settings");
   };
 
   if (!user) {
-    // Optional: Handle the case when user data is not available
     return (
       <SafeAreaView className="bg-primary h-full">
         <EmptyState title="User not logged in" subtitle="Please log in to continue" />
@@ -34,7 +41,7 @@ const Profile = () => {
   return (
     <SafeAreaView className="bg-primary h-full">
       <FlatList
-        data={posts || []} // Ensure safe handling when posts data is undefined
+        data={posts || []}
         keyExtractor={(item) => item.$id}
         renderItem={({ item }) => (
           <VideoCard
@@ -53,21 +60,27 @@ const Profile = () => {
         )}
         ListHeaderComponent={() => (
           <View className="w-full flex justify-center items-center mt-6 mb-12 px-4">
-            <TouchableOpacity
-              onPress={logout}
-              className="flex w-full items-end mb-10"
-            >
-              <Image
-                source={icons.logout}
-                resizeMode="contain"
-                className="w-6 h-6"
-              />
-            </TouchableOpacity>
+            <View className="flex w-full flex-row justify-between items-center mb-10">
+              <TouchableOpacity onPress={goToSettings}>
+                <Image
+                  source={icons.settings}
+                  resizeMode="contain"
+                  className="w-6 h-6"
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={logout}>
+                <Image
+                  source={icons.logout}
+                  resizeMode="contain"
+                  className="w-6 h-6"
+                />
+              </TouchableOpacity>
+            </View>
 
-            <View className="w-16 h-16 border border-secondary rounded-lg flex justify-center items-center">
+            <View className="w-24 h-24 border border-secondary rounded-full overflow-hidden">
               <Image
                 source={{ uri: user?.avatar }}
-                className="w-[90%] h-[90%] rounded-lg"
+                className="w-full h-full"
                 resizeMode="cover"
               />
             </View>
@@ -78,15 +91,22 @@ const Profile = () => {
               titleStyles="text-lg"
             />
 
+            <TouchableOpacity
+              onPress={handleEditProfile}
+              className="mt-4 bg-secondary px-6 py-2 rounded-lg"
+            >
+              <Text className="text-white">Edit Profile</Text>
+            </TouchableOpacity>
+
             <View className="mt-5 flex flex-row">
               <InfoBox
-                title={posts?.length || 0} // Safely handle undefined posts
+                title={posts?.length || 0}
                 subtitle="Posts"
                 titleStyles="text-xl"
                 containerStyles="mr-10"
               />
               <InfoBox
-                title="1.2k" // Placeholder data for followers count
+                title="1.2k"
                 subtitle="Followers"
                 titleStyles="text-xl"
               />
